@@ -4,9 +4,11 @@ import * as d3 from "d3";
 document.getElementById('app').innerHTML += `
 <div id="container"></div>
 <div id='title-text'>
-  <h1>Doping in Professional Bicycle Racing</h1>
-  <p>35 Fastest times up Alpe d'Huez</p>
+  <h1 id='title'>Doping in Professional Bicycle Racing</h1>
+  <h3>35 Fastest times up Alpe d'Huez</h3>
 </div>
+<div id="tooltip"></div>
+<div id="legend"></div>
 
 `
 
@@ -43,24 +45,6 @@ const makeSvg = () => {
   // .style('border', '1px solid red')
 }
 
-
-const makeCircles = data => {
-  const svg =  d3.select('svg')
-
-  svg.selectAll('circle')
-  .data(data)
-  .enter()
-  .append('circle')
-  .attr('r', 9)
-  .attr('cx', d => scaleX(d.Year))
-  .attr('cy', (d, i) => scaleY(timeToSeconds(d.Time)) )
-  .attr('fill', d => d.Doping == "" ? '#18d100' : 'red')
-  .attr('stroke', 'black')
-  .attr('stroke-width', '2px')
-
-
-}
-
 const timeToSeconds = timeStr => {
   const [minutes, seconds] = timeStr.split(":").map(Number)
   return minutes * 60 + seconds
@@ -71,6 +55,8 @@ const secondsToTime = totalSeconds => {
   const seconds = totalSeconds % 60
   return `${minutes}:${seconds.toString().padStart(2, '0')}`
 }
+
+
 
 const makeAxis = data => {
   const svg =  d3.select('svg')
@@ -106,3 +92,53 @@ const makeAxis = data => {
   .attr('id', 'y-axis')
   .call(axisY)
 }
+
+
+const makeCircles = data => {
+  const svg =  d3.select('svg')
+  const tooltip = d3.select('#tooltip')
+
+  svg.selectAll('circle')
+  .data(data)
+  .enter()
+  .append('circle')
+  .attr('r', 9)
+  .attr('cx', d => scaleX(d.Year))
+  .attr('cy', (d, i) => scaleY(timeToSeconds(d.Time)) )
+  .attr('fill', d => d.Doping == "" ? '#18d100' : 'red')
+  .attr('class', 'dot')
+  .attr('data-xvalue', d => scaleX(d.Year))
+  .attr('data-yvalue', (d, i) => scaleY(timeToSeconds(d.Time)))
+  .on('mouseover', (event, d) => {
+    tooltip.style('opacity', '1')
+    .html(`
+      ${d.Name} </br>
+      Year: ${d.Year}, Time: ${d.Time} 
+      ${d.Doping ? '</br></br>' + d.Doping : ''}
+      `)
+    .style('top', `${event.pageY}px`)
+    .style('left', `${event.pageX}px`)
+  })
+  .on('mouseout', () => {
+    tooltip.style('opacity', '0')
+  })
+
+  d3.select('#legend')
+  .html(`
+    <div class="legend-item">
+      <div id='dop-al'></div>
+      <p>Riders with doping allegations</p>
+    </div>
+    <div class="legend-item">
+      <div id='no-dop-al'></div>
+      <p>No doping allegations</p>
+    </div>
+  `)
+  .append('rect')
+  .attr('height', '10px')
+  .attr('width', "10px")
+  .attr("fill", "white")
+
+}
+
+
