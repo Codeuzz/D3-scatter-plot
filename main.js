@@ -30,9 +30,9 @@ fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/maste
   console.error('Error fetching the dataa', error);
 })
 
-const height = 700;
-const width = 1000;
-const padding = 50;
+const height = 550;
+const width = 800;
+const padding = 40;
 let scaleX
 let scaleY
 
@@ -40,9 +40,8 @@ let scaleY
 const makeSvg = () => {
   d3.select('#container')
   .append('svg')
-  .attr('height', height)
+  .attr('height', height + 20)
   .attr('width', width )
-  // .style('border', '1px solid red')
 }
 
 const timeToSeconds = timeStr => {
@@ -101,7 +100,7 @@ const makeCircles = data => {
   .data(data)
   .enter()
   .append('circle')
-  .attr('r', 9)
+  .attr('r', 6)
   .attr('cx', d => scaleX(d.Year))
   .attr('cy', (d, i) => scaleY(timeToSeconds(d.Time)) )
   .attr('fill', d => d.Doping == "" ? '#18d100' : 'red')
