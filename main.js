@@ -77,15 +77,14 @@ const makeAxis = data => {
     .call(axisX)
 
 
-  const TimeInSeconds = data.map(d => timeToSeconds(d.Time))
+  const secArr = data.map(d => d.Seconds)
 
-  scaleY = d3.scaleLinear()
-    .domain([d3.max(TimeInSeconds) + 10, d3.min(TimeInSeconds)+ 20])
+  scaleY = d3.scaleTime()
+    .domain([new Date(d3.max(secArr)), new Date(d3.min(secArr))])
     .range([height - padding, padding])
 
   const axisY = d3.axisLeft(scaleY)
   .tickFormat(secondsToTime)
-
 
   svg.append('g')
   .attr("transform", `translate(${padding}, 0)`)
@@ -107,8 +106,8 @@ const makeCircles = data => {
   .attr('cy', (d, i) => scaleY(timeToSeconds(d.Time)) )
   .attr('fill', d => d.Doping == "" ? '#18d100' : 'red')
   .attr('class', 'dot')
-  .attr('data-xvalue', d => scaleX(d.Year))
-  .attr('data-yvalue', (d, i) => scaleY(timeToSeconds(d.Time)))
+  .attr('data-xvalue', d => d.Year)
+  .attr('data-yvalue', (d, i) => new Date(d.Seconds * 1000))
   .on('mouseover', (event, d) => {
     tooltip.style('opacity', '1')
     .html(`
@@ -116,8 +115,9 @@ const makeCircles = data => {
       Year: ${d.Year}, Time: ${d.Time} 
       ${d.Doping ? '</br></br>' + d.Doping : ''}
       `)
-    .style('top', `${event.pageY}px`)
-    .style('left', `${event.pageX}px`)
+    .attr('data-year', d.Year)
+    .style('top', `${event.pageY + 10}px`)
+    .style('left', `${event.pageX + 20}px`)
   })
   .on('mouseout', () => {
     tooltip.style('opacity', '0')
