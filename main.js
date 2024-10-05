@@ -2,11 +2,11 @@ import './style.css'
 import * as d3 from "d3";
 
 document.getElementById('app').innerHTML += `
-<div id="container"></div>
 <div id='title-text'>
   <h1 id='title'>Doping in Professional Bicycle Racing</h1>
   <h3>35 Fastest times up Alpe d'Huez</h3>
 </div>
+<div id="container"></div>
 <div id="tooltip"></div>
 <div id="legend"></div>
 
@@ -30,8 +30,8 @@ fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/maste
   console.error('Error fetching the dataa', error);
 })
 
-const height = 800;
-const width = 1200;
+const height = 700;
+const width = 1000;
 const padding = 50;
 let scaleX
 let scaleY
@@ -80,7 +80,7 @@ const makeAxis = data => {
   const secArr = data.map(d => d.Seconds)
 
   scaleY = d3.scaleTime()
-    .domain([new Date(d3.max(secArr)), new Date(d3.min(secArr))])
+    .domain([new Date(d3.max(secArr) + 10), new Date(d3.min(secArr) - 10)])
     .range([height - padding, padding])
 
   const axisY = d3.axisLeft(scaleY)
